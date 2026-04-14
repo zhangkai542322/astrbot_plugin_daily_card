@@ -1,0 +1,56 @@
+{
+    "default_city": {
+        "description": "默认天气查询城市",
+        "type": "string",
+        "default": "北京",
+        "hint": "当用户未指定城市时使用"
+    },
+    "weather_template": {
+        "description": "天气默认模板",
+        "type": "string",
+        "default": "classic",
+        "hint": "可选: classic(经典简约), newspaper(报纸风格), dashboard(仪表盘), minimal(极简), datapanel(数据面板), timeline(时间轴), postcard(明信片), terminal(终端风格)"
+    },
+    "todo_template": {
+        "description": "待办/日程默认模板",
+        "type": "string",
+        "default": "schedule_grid",
+        "hint": "可选: schedule_grid(日程表格), course_table(课程表), progress(进度概览)"
+    },
+    "news_template": {
+        "description": "新闻默认模板",
+        "type": "string",
+        "default": "headline",
+        "hint": "可选: headline(头条摘要), ticker(滚动条)"
+    },
+    "custom_template": {
+        "description": "自定义卡片默认模板",
+        "type": "string",
+        "default": "memo",
+        "hint": "可选: quote(名言金句), memo(备忘录), greeting(贺卡), list(列表)"
+    },
+    "combined_template": {
+        "description": "聚合卡片默认模板",
+        "type": "string",
+        "default": "daily_summary",
+        "hint": "可选: daily_summary(每日总览), split_panel(分屏面板)"
+    },
+    "temp_unit": {
+        "description": "温度单位",
+        "type": "string",
+        "default": "celsius",
+        "hint": "celsius 或 fahrenheit"
+    },
+    "font_dir": {
+        "description": "自定义字体目录",
+        "type": "string",
+        "default": "/AstrBot/data/fonts",
+        "hint": "将中文字体文件放到此目录，默认查找 font.ttf。多个插件可共享此目录"
+    },
+    "font_filename": {
+        "description": "字体文件名(可选)",
+        "type": "string",
+        "default": "",
+        "hint": "指定字体文件名，如 MapleMono-CN-Medium.ttf。留空则自动查找上方目录下的字体。插件自带字体作为兜底"
+    }
+}
