@@ -1,6 +1,7 @@
 # 每日卡片 (Daily Card) v1.6.0
 ### **提醒:请先安装前置插件`极趣AI便利贴(Zectrix Todo)`**
 下载地址:https://github.com/zhangkai542322/astrbot_plugin_zectrix
+
 LLM驱动的每日卡片图片生成插件 — **21款模板** · **400×300纯黑白** · **自带中文字体**
 
 全部功能通过与AI对话驱动。图片生成后可由 LLM 调用 [**极趣AI便利贴(Zectrix Todo)**](https://github.com/zhangkai542322/astrbot_plugin_zectrix) 插件推送到墨水屏设备。
