@@ -580,7 +580,7 @@ def _r_terminal(d):
         elif btn_type=="maximize":
             dr.rectangle([cx-3,btn_y-3,cx+3,btn_y+3],outline=WHITE,width=1)
     lines=[f"$ weather --city {d['city']}",
-           f"> 温度: {d['temp']}C (体感{d['feels_like']}C)",
+           f"> 温度: {d['temp']}° (体感{d['feels_like']}°)",
            f"> 天气: {d['desc']} [{d['weather_code']}]",
            f"> 湿度: {d['humidity']}%",
            f"> 风速: {d['wind_speed']}km/h ({_wind_dir(d['wind_dir'])})",
@@ -589,7 +589,7 @@ def _r_terminal(d):
     y=32
     for l in lines: _dt(dr,(8,y),l,ft,fill=WHITE); y+=24
     for dd in d.get("daily",[])[1:4]:
-        _dt(dr,(8,y),f"> [{dd['weekday']}] {dd['desc']} {dd['max']}C/{dd['min']}C",fsm,fill=WHITE); y+=22
+        _dt(dr,(8,y),f"> [{dd['weekday']}] {dd['desc']} {dd['max']}/{dd['min']}°",fsm,fill=WHITE); y+=22
     _dt(dr,(8,H-30),"$",ft,fill=WHITE)
     return img
 
@@ -716,7 +716,7 @@ def _r_headline(d):
 
 def _r_ticker(d):
     img = Image.new("L", (W, H), WHITE); dr = ImageDraw.Draw(img)
-    fsm=_get_font(13); fx=_get_font(11); ftag=_get_font(10)
+    fsm=_get_font(22); fx=_get_font(16); ftag=_get_font(14)
     dr.rectangle([0,0,W,4],fill=BLACK); dr.rectangle([0,4,W,30],fill=BLACK)
     _dt(dr,(W//2,17),f"{d.get('title','NEWS')} | {d.get('date','')}",fsm,fill=WHITE,anchor="mm")
     items=d.get("items",[]); y=38; ih=min((H-48)//max(len(items[:8]),1),32)
@@ -725,7 +725,7 @@ def _r_ticker(d):
         if tag:
             tw=len(tag)*8+10
             dr.rectangle([12,ry+2,12+tw,ry+16],fill=BLACK)
-            _dt(dr,(12+tw//2,ry+5),tag,ftag,fill=WHITE,anchor="mm")
+            _dt(dr,(12+tw//2,ry+9),tag,ftag,fill=WHITE,anchor="mm")
             hx=18+tw
         else: hx=15
         _dt(dr,(hx,ry+3),item.get("headline","")[:36],fsm)
@@ -1016,13 +1016,15 @@ class DailyCardPlugin(Star):
     # ==========================
 
     @filter.llm_tool(name="get_weather_card")
-    async def tool_weather(self, event: AstrMessageEvent, city: str = "", template: str = "") -> MessageEventResult:
-        '''生成天气图片卡片（支持中文）。触发词：查天气、天气怎么样、北京天气、明天天气。
+    async def tool_weather(self, event: AstrMessageEvent, city: str = None, template: str = "") -> MessageEventResult:
+        '''生成天气图片卡片（支持中文）。触发词：查天气、天气怎么样、今天天气、明天天气、看看天气。
 
-用法：get_weather_card(city="北京")，不填城市用默认。直接返回图片。
+用法：get_weather_card() 或 get_weather_card(city="北京")。city参数留空或不传时，自动使用用户配置文件中配置的默认城市（无需在参数中写死城市名）。
+
+重要：用户问"查天气"、"看看天气"、"天气怎么样"等没有指定城市时，直接调用 get_weather_card() 不传city参数，会自动使用配置的默认城市！
 
 Args:
-            city(string): 城市名，不填用默认
+            city(string): 城市名，不填（留空）时使用默认城市。示例: city="北京" 或 city="上海"
             template(string): 可选: classic(经典), newspaper(报纸), dashboard(仪表盘), minimal(极简), datapanel(数据面板), timeline(时间轴), postcard(明信片), terminal(终端)
         '''
         city = city or self.default_city
@@ -1046,7 +1048,7 @@ Args:
         img = renderer(data)
         path = _save(img, "weather")
         yield event.image_result(path)
-        yield event.plain_result(f"天气卡片已生成。图片路径: {path}。可调用 push_image_to_device 推送到设备。")
+        yield event.plain_result(f"天气卡片已生成。图片路径: {path}。如果用户要求推送到设备/第X页，请立即调用 push_image_to_device(image_path=\"{path}\", page_id=\"X\")")
 
     @filter.llm_tool(name="get_schedule_card")
     async def tool_schedule(self, event: AstrMessageEvent, data_json: str, template: str = "") -> MessageEventResult:
@@ -1072,7 +1074,7 @@ Args:
         img = renderer(data)
         path = _save(img, "schedule")
         yield event.image_result(path)
-        yield event.plain_result(f"日程卡片已生成。图片路径: {path}。可调用 push_image_to_device 推送到设备。")
+        yield event.plain_result(f"日程卡片已生成。图片路径: {path}。如果用户要求推送到设备/第X页，请立即调用 push_image_to_device(image_path=\"{path}\", page_id=\"X\")")
 
     @filter.llm_tool(name="get_news_card")
     async def tool_news(self, event: AstrMessageEvent, data_json: str, template: str = "") -> MessageEventResult:
@@ -1097,7 +1099,7 @@ Args:
         img = renderer(data)
         path = _save(img, "news")
         yield event.image_result(path)
-        yield event.plain_result(f"新闻卡片已生成。图片路径: {path}。可调用 push_image_to_device 推送到设备。")
+        yield event.plain_result(f"新闻卡片已生成。图片路径: {path}。如果用户要求推送到设备/第X页，请立即调用 push_image_to_device(image_path=\"{path}\", page_id=\"X\")")
 
     @filter.llm_tool(name="get_custom_card")
     async def tool_custom(self, event: AstrMessageEvent, data_json: str, template: str = "") -> MessageEventResult:
@@ -1124,7 +1126,7 @@ Args:
         img = renderer(data)
         path = _save(img, "custom")
         yield event.image_result(path)
-        yield event.plain_result(f"自定义卡片已生成。图片路径: {path}。可调用 push_image_to_device 推送到设备。")
+        yield event.plain_result(f"自定义卡片已生成。图片路径: {path}。如果用户要求推送到设备/第X页，请立即调用 push_image_to_device(image_path=\"{path}\", page_id=\"X\")")
 
     @filter.llm_tool(name="get_combined_card")
     async def tool_combined(self, event: AstrMessageEvent, data_json: str, template: str = "") -> MessageEventResult:
@@ -1149,7 +1151,7 @@ Args:
         img = renderer(data)
         path = _save(img, "combined")
         yield event.image_result(path)
-        yield event.plain_result(f"聚合卡片已生成。图片路径: {path}。可调用 push_image_to_device 推送到设备。")
+        yield event.plain_result(f"聚合卡片已生成。图片路径: {path}。如果用户要求推送到设备/第X页，请立即调用 push_image_to_device(image_path=\"{path}\", page_id=\"X\")")
 
     @filter.llm_tool(name="list_card_templates")
     async def tool_list_templates(self, event: AstrMessageEvent, category: str = "") -> MessageEventResult:

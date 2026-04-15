@@ -1,5 +1,5 @@
 name: astrbot_plugin_daily_card
 display_name: "每日卡片(Daily Card)"
 desc: "LLM驱动的每日卡片图片生成插件 - 天气/日程/新闻/自定义/聚合"
-version: v1.5.3
+version: v1.6.1
 author: "zhangkai542322"
